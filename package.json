@@ -1,0 +1,29 @@
+{
+  "name": "minnow-image-convert",
+  "version": "1.0.0",
+  "description": "A command line tool to convert image files to tileset data for the Minnow game engine",
+  "main": "index.js",
+  "bin": {
+    "snippet": "./src/index.js"
+  },
+  "preferGlobal": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/byersdz/minnow-image-convert.git"
+  },
+  "keywords": [],
+  "author": "David Byers",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/byersdz/minnow-image-convert/issues"
+  },
+  "homepage": "https://github.com/byersdz/minnow-image-convert#readme",
+  "devDependencies": {
+    "eslint": "^5.14.1",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.16.0"
+  }
+}
