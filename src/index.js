@@ -102,14 +102,27 @@ Jimp.read( fileValue )
 
       const pixelIndex = startIndex + ( relativeY * configData.tileSize ) + relativeX;
 
-      // const red = image.bitmap.data[idx];
-      // const green = image.bitmap.data[idx + 1];
-      // const blue = image.bitmap.data[idx + 2];
+      const red = image.bitmap.data[idx];
+      const green = image.bitmap.data[idx + 1];
+      const blue = image.bitmap.data[idx + 2];
       const alpha = image.bitmap.data[idx + 3];
 
       let paletteId = 0;
       if ( alpha > 128 ) {
-        paletteId = 2;
+        // find the closest palette color
+        let minDistance = 10000;
+        let closestId = 1;
+        for ( let i = 1; i < paletteData.colors.length; i += 1 ) {
+          const color = paletteData.colors[i];
+          let distance = Math.abs( red - color[0] );
+          distance += Math.abs( green - color[1] );
+          distance += Math.abs( blue - color[2] );
+          if ( distance < minDistance ) {
+            minDistance = distance;
+            closestId = i;
+          }
+        }
+        paletteId = closestId;
       }
 
       if ( pixelIndex > maxIndex ) {
@@ -119,11 +132,43 @@ Jimp.read( fileValue )
       imageData[pixelIndex] = paletteId;
     } );
 
-    console.log( maxIndex );
-    const dataString = imageData.join( ',' );
-    let tilesetJSON = '{ "data": [';
+    // compress the image data using run length encoding
+
+    const runLengthData = [];
+    let currentValue = imageData[0];
+    let runNumber = 0;
+    for ( let i = 0; i < imageData.length; i += 1 ) {
+      if ( imageData[i] === currentValue ) {
+        runNumber += 1;
+      }
+      else {
+        runLengthData.push( runNumber );
+        runLengthData.push( currentValue );
+        runNumber = 1;
+        currentValue = imageData[i];
+      }
+    }
+    runLengthData.push( runNumber );
+    runLengthData.push( currentValue );
+
+    const runDataString = runLengthData.join( ',' );
+    const csvDataString = imageData.join( ',' );
+
+    let dataString = runDataString;
+    let format = 'run';
+
+    if ( runDataString.length > csvDataString ) {
+      dataString = csvDataString;
+      format = 'array';
+    }
+
+    let tilesetJSON = `{\n  "format": "${ format }", \n`;
+    tilesetJSON += `  "tileSize": ${ configData.tileSize }, \n`;
+    tilesetJSON += `  "width": ${ configData.width }, \n`;
+    tilesetJSON += `  "height": ${ configData.height }, \n`;
+    tilesetJSON += '  "data": [\n    ';
     tilesetJSON += dataString;
-    tilesetJSON += '] }';
+    tilesetJSON += '\n  ]\n}';
 
     fs.writeFile( './test.tileset.json', tilesetJSON, ( error ) => {
       if ( error ) {
