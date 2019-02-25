@@ -19,6 +19,8 @@ if ( !fileValue ) {
   process.exit( 1 );
 }
 
+const fileName = fileValue.split( '.' )[0];
+
 let palleteContents = null;
 
 try {
@@ -40,8 +42,6 @@ catch ( error ) {
   console.log( error );
   process.exit( 1 );
 }
-
-console.log( paletteData );
 
 let configContents = null;
 
@@ -67,8 +67,6 @@ catch ( error ) {
 
 Jimp.read( fileValue )
   .then( ( image ) => {
-    console.log( image.bitmap.width );
-    console.log( image.bitmap.height );
     if ( image.bitmap.width !== configData.tileSize * configData.width ) {
       console.log( 'Invalid image width!' );
       process.exit( 1 );
@@ -78,8 +76,6 @@ Jimp.read( fileValue )
       process.exit( 1 );
     }
 
-    const imageDataSize = image.bitmap.width * image.bitmap.height;
-    console.log( imageDataSize );
     const imageData = new Array( image.bitmap.width * image.bitmap.height );
     let maxIndex = 0;
     let maxY = 0;
@@ -91,8 +87,6 @@ Jimp.read( fileValue )
       }
       const tileX = Math.floor( x / configData.tileSize );
       const tileY = Math.floor( adjustedY / configData.tileSize );
-
-      // console.log( `${ x } ${ y } ${ adjustedY } ${ tileX } ${ tileY }` );
 
       const iPerTile = configData.tileSize * configData.tileSize;
       const startIndex = tileY * iPerTile * configData.width + ( tileX * iPerTile );
@@ -163,6 +157,7 @@ Jimp.read( fileValue )
     }
 
     let tilesetJSON = `{\n  "format": "${ format }", \n`;
+    tilesetJSON += `  "name": "${ fileName }", \n`;
     tilesetJSON += `  "tileSize": ${ configData.tileSize }, \n`;
     tilesetJSON += `  "width": ${ configData.width }, \n`;
     tilesetJSON += `  "height": ${ configData.height }, \n`;
@@ -170,7 +165,7 @@ Jimp.read( fileValue )
     tilesetJSON += dataString;
     tilesetJSON += '\n  ]\n}';
 
-    fs.writeFile( './test.tileset.json', tilesetJSON, ( error ) => {
+    fs.writeFile( `./${ fileName }.tileset.json`, tilesetJSON, ( error ) => {
       if ( error ) {
         console.log( error );
         process.exit( 1 );
