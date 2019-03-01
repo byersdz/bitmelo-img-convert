@@ -21,28 +21,6 @@ if ( !fileValue ) {
 
 const fileName = fileValue.split( '.' )[0];
 
-let palleteContents = null;
-
-try {
-  palleteContents = fs.readFileSync( './palette.json' );
-}
-catch ( error ) {
-  console.log( 'Error getting palette.json!' );
-  console.log( error );
-  process.exit( 1 );
-}
-
-let paletteData = null;
-
-try {
-  paletteData = JSON.parse( palleteContents );
-}
-catch ( error ) {
-  console.log( 'Could not parse palette.json!' );
-  console.log( error );
-  process.exit( 1 );
-}
-
 let configContents = null;
 
 try {
@@ -67,11 +45,13 @@ catch ( error ) {
 
 Jimp.read( fileValue )
   .then( ( image ) => {
-    if ( image.bitmap.width !== configData.tileSize * configData.width ) {
+    const width = image.bitmap.width / configData.tileSize;
+    const height = image.bitmap.height / configData.tileSize;
+    if ( !Number.isInteger( width ) ) {
       console.log( 'Invalid image width!' );
       process.exit( 1 );
     }
-    if ( image.bitmap.height !== configData.tileSize * configData.height ) {
+    if ( !Number.isInteger( height ) ) {
       console.log( 'Invalid image height!' );
       process.exit( 1 );
     }
@@ -80,7 +60,7 @@ Jimp.read( fileValue )
     let maxIndex = 0;
     let maxY = 0;
     image.scan( 0, 0, image.bitmap.width, image.bitmap.height, ( x, y, idx ) => {
-      const adjustedY = ( configData.height * configData.tileSize ) - y - 1;
+      const adjustedY = ( height * configData.tileSize ) - y - 1;
 
       if ( adjustedY > maxY ) {
         maxY = adjustedY;
@@ -89,7 +69,7 @@ Jimp.read( fileValue )
       const tileY = Math.floor( adjustedY / configData.tileSize );
 
       const iPerTile = configData.tileSize * configData.tileSize;
-      const startIndex = tileY * iPerTile * configData.width + ( tileX * iPerTile );
+      const startIndex = tileY * iPerTile * width + ( tileX * iPerTile );
 
       const relativeX = x - ( tileX * configData.tileSize );
       const relativeY = adjustedY - ( tileY * configData.tileSize );
@@ -106,8 +86,8 @@ Jimp.read( fileValue )
         // find the closest palette color
         let minDistance = 10000;
         let closestId = 1;
-        for ( let i = 1; i < paletteData.colors.length; i += 1 ) {
-          const color = paletteData.colors[i];
+        for ( let i = 1; i < configData.palette.length; i += 1 ) {
+          const color = configData.palette[i];
           let distance = Math.abs( red - color[0] );
           distance += Math.abs( green - color[1] );
           distance += Math.abs( blue - color[2] );
@@ -159,8 +139,8 @@ Jimp.read( fileValue )
     let tilesetJSON = `{\n  "format": "${ format }", \n`;
     tilesetJSON += `  "name": "${ fileName }", \n`;
     tilesetJSON += `  "tileSize": ${ configData.tileSize }, \n`;
-    tilesetJSON += `  "width": ${ configData.width }, \n`;
-    tilesetJSON += `  "height": ${ configData.height }, \n`;
+    tilesetJSON += `  "width": ${ width }, \n`;
+    tilesetJSON += `  "height": ${ height }, \n`;
     tilesetJSON += '  "data": [\n    ';
     tilesetJSON += dataString;
     tilesetJSON += '\n  ]\n}';
