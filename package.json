@@ -1,11 +1,9 @@
 {
   "name": "minnow-image-convert",
   "version": "1.0.0",
-  "description": "A command line tool to convert image files to tileset data for the Minnow game engine",
-  "main": "index.js",
-  "bin": {
-    "snippet": "./src/index.js"
-  },
+  "description": "A command line tool to convert image files to data usable for the Minnow game engine",
+  "main": "./src/index.js",
+  "bin": "./src/index.js",
   "preferGlobal": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
