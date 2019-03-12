@@ -161,6 +161,11 @@ Jimp.read( fileValue )
       fontOutput.tileSize = configData.tileSize;
       fontOutput.width = width;
       fontOutput.height = height;
+      fontOutput.originX = configData.originX;
+      fontOutput.originY = configData.originY;
+      fontOutput.standardWidth = configData.standardWidth;
+      fontOutput.letterSpacing = configData.letterSpacing;
+      fontOutput.charData = configData.charData;
       fontOutput.data = runLengthData;
 
       const fontJSON = JSON.stringify( fontOutput );
