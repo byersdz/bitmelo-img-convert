@@ -120,6 +120,102 @@
     "164": {
       "name": "currency",
       "width": 6
+    },
+    "165": {
+      "name": "yen",
+      "width": 7
+    },
+    "166": {
+      "name": "broken bar",
+      "width": 1
+    },
+    "167": {
+      "name": "section",
+      "width": 6
+    },
+    "169": {
+      "name": "copyright",
+      "width": 7
+    },
+    "170": {
+      "name": "f ordinal",
+      "width": 4
+    },
+    "171": {
+      "name": "<<",
+      "width": 6
+    },
+    "172": {
+      "name": "not",
+      "width": 6
+    },
+    "174": {
+      "name": "(r)",
+      "width": 8
+    },
+    "176": {
+      "name": "degree",
+      "width": 4
+    },
+    "178": {
+      "name": "^2",
+      "width": 3
+    },
+    "179": {
+      "name": "^3",
+      "width": 3
+    },
+    "180": {
+      "name": "acute",
+      "width": 2
+    },
+    "182": {
+      "name": "pilcrow",
+      "width": 3
+    },
+    "183": {
+      "name": "middle dot",
+      "width": 1
+    },
+    "185": {
+      "name": "^1",
+      "width": 4
+    },
+    "186": {
+      "name": "m ordinal",
+      "width": 4
+    },
+    "187": {
+      "name": ">>",
+      "width": 6
+    },
+    "188": {
+      "name": "1/4",
+      "width": 7
+    },
+    "189": {
+      "name": "1/2",
+      "width": 7
+    },
+    "190": {
+      "name": "3/4",
+      "width": 7
+    },
+    "236": {
+      "name": "i",
+      "width": 3
+    },
+    "237": {
+      "name": "i",
+      "width": 3
+    },
+    "238": {
+      "name": "i",
+      "width": 3
+    },
+    "239": {
+      "name": "i",
+      "width": 3
     }
   }
 }
