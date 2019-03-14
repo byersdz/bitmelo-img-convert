@@ -7,7 +7,8 @@
   "charData": {
     "8364": {
       "name": "euro",
-      "remap": "1"
+      "remap": 1,
+      "width": 6
     },
     "33": {
       "name": "!",
