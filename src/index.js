@@ -9,6 +9,7 @@ let fileValue = null;
 program
   .version( '1.0.0' )
   .arguments( '<file>' )
+  .option( '-f, --font', 'convert a font' )
   .action( ( file ) => {
     fileValue = file;
   } )
@@ -24,7 +25,13 @@ const fileName = fileValue.split( '.' )[0];
 let configContents = null;
 
 try {
-  configContents = fs.readFileSync( './tileset-config.json' );
+  if ( program.font ) {
+    const configPath = `${ fileName }.config.json`;
+    configContents = fs.readFileSync( configPath );
+  }
+  else {
+    configContents = fs.readFileSync( './tileset-config.json' );
+  }
 }
 catch ( error ) {
   console.log( 'Error getting tileset-config.json!' );
@@ -83,20 +90,32 @@ Jimp.read( fileValue )
 
       let paletteId = 0;
       if ( alpha > 128 ) {
-        // find the closest palette color
-        let minDistance = 10000;
-        let closestId = 1;
-        for ( let i = 1; i < configData.palette.length; i += 1 ) {
-          const color = configData.palette[i];
-          let distance = Math.abs( red - color[0] );
-          distance += Math.abs( green - color[1] );
-          distance += Math.abs( blue - color[2] );
-          if ( distance < minDistance ) {
-            minDistance = distance;
-            closestId = i;
+        if ( program.font ) {
+          // white is the main font color
+          // black is the outline font color
+          if ( red > 128 ) {
+            paletteId = 1; // main color
+          }
+          else {
+            paletteId = 2; // outline color
           }
         }
-        paletteId = closestId;
+        else {
+          // find the closest palette color
+          let minDistance = 10000;
+          let closestId = 1;
+          for ( let i = 1; i < configData.palette.length; i += 1 ) {
+            const color = configData.palette[i];
+            let distance = Math.abs( red - color[0] );
+            distance += Math.abs( green - color[1] );
+            distance += Math.abs( blue - color[2] );
+            if ( distance < minDistance ) {
+              minDistance = distance;
+              closestId = i;
+            }
+          }
+          paletteId = closestId;
+        }
       }
 
       if ( pixelIndex > maxIndex ) {
@@ -136,23 +155,48 @@ Jimp.read( fileValue )
       format = 'array';
     }
 
-    let tilesetJSON = `{\n  "format": "${ format }", \n`;
-    tilesetJSON += `  "name": "${ fileName }", \n`;
-    tilesetJSON += `  "tileSize": ${ configData.tileSize }, \n`;
-    tilesetJSON += `  "width": ${ width }, \n`;
-    tilesetJSON += `  "height": ${ height }, \n`;
-    tilesetJSON += '  "data": [\n    ';
-    tilesetJSON += dataString;
-    tilesetJSON += '\n  ]\n}';
+    if ( program.font ) {
+      const fontOutput = {};
+      fontOutput.name = fileName;
+      fontOutput.tileSize = configData.tileSize;
+      fontOutput.width = width;
+      fontOutput.height = height;
+      fontOutput.originX = configData.originX;
+      fontOutput.originY = configData.originY;
+      fontOutput.standardWidth = configData.standardWidth;
+      fontOutput.letterSpacing = configData.letterSpacing;
+      fontOutput.charData = configData.charData;
+      fontOutput.data = runLengthData;
 
-    fs.writeFile( `./${ fileName }.tileset.json`, tilesetJSON, ( error ) => {
-      if ( error ) {
-        console.log( error );
-        process.exit( 1 );
-      }
+      const fontJSON = JSON.stringify( fontOutput );
+      fs.writeFile( `./${ fileName }.font.json`, fontJSON, ( error ) => {
+        if ( error ) {
+          console.log( error );
+          process.exit( 1 );
+        }
 
-      console.log( 'Tileset succesfully created!' );
-    } );
+        console.log( 'Font succesfully created!' );
+      } );
+    }
+    else {
+      let tilesetJSON = `{\n  "format": "${ format }", \n`;
+      tilesetJSON += `  "name": "${ fileName }", \n`;
+      tilesetJSON += `  "tileSize": ${ configData.tileSize }, \n`;
+      tilesetJSON += `  "width": ${ width }, \n`;
+      tilesetJSON += `  "height": ${ height }, \n`;
+      tilesetJSON += '  "data": [\n    ';
+      tilesetJSON += dataString;
+      tilesetJSON += '\n  ]\n}';
+
+      fs.writeFile( `./${ fileName }.tileset.json`, tilesetJSON, ( error ) => {
+        if ( error ) {
+          console.log( error );
+          process.exit( 1 );
+        }
+
+        console.log( 'Tileset succesfully created!' );
+      } );
+    }
   } )
   .catch( ( error ) => {
     console.log( 'Could not load image file!' );
