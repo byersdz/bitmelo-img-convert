@@ -1,6 +1,6 @@
 {
   "name": "minnow-image-convert",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A command line tool to convert image files to data usable for the Minnow game engine",
   "main": "./src/index.js",
   "bin": "./src/index.js",
@@ -25,7 +25,7 @@
     "eslint-plugin-import": "^2.16.0"
   },
   "dependencies": {
-    "commander": "^2.19.0",
-    "jimp": "^0.6.0"
+    "commander": "2.19.0",
+    "jimp": "0.6.0"
   }
 }
